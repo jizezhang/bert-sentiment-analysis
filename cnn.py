@@ -1,0 +1,28 @@
+import sys
+from collections import namedtuple
+from typing import List, Tuple
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.nn.utils
+
+class CNN(nn.Module):
+    '''
+    implement the cnn
+    '''
+    def __init__(self, embed_char, kernel_size, num_filter):
+        '''Init the Highway model'''
+        super(CNN, self).__init__()
+        
+        self.in_channel = embed_char 
+        self.kernel_size = kernel_size
+        self.out_channel = num_filter
+        self.conv1 = nn.Conv1d(self.in_channel, self.out_channel, self.kernel_size, bias=True)
+    
+    def forward(self, x_reshape):
+        max_word_length = x_reshape.shape[-1]
+        x_conv = self.conv1(x_reshape)
+        x_relu = F.relu(x_conv)
+        x_conv_out = F.max_pool1d(x_relu, max_word_length-self.kernel_size+1)
+        return x_conv_out
