@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import sys
 from collections import namedtuple
 from typing import List, Tuple
@@ -11,11 +13,11 @@ class CNN(nn.Module):
     '''
     implement the cnn
     '''
-    def __init__(self, embed_char, kernel_size, num_filter):
+    def __init__(self, embed_size, kernel_size, num_filter):
         '''Init the Highway model'''
         super(CNN, self).__init__()
         
-        self.in_channel = embed_char 
+        self.in_channel = embed_size 
         self.kernel_size = kernel_size
         self.out_channel = num_filter
         self.conv1 = nn.Conv1d(self.in_channel, self.out_channel, self.kernel_size, bias=True)

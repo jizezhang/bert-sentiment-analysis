@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from transformers import *#BertTokenizer, BertModel
+import pandas as pd
+import numpy as np
+import torch
+import torch.nn as nn
+from cnn import CNN
+from highway import *
 class Embeddings:
     LAST_LAYER = 1
     LAST_4_LAYERS = 2
@@ -89,5 +98,5 @@ class Embeddings:
                 token_vecs_sum.append(list(sum_vec))
 
             # summing the last layer vectors for each token
-            sentence_embedding = np.mean(token_vecs_sum, axis=0)
-            return sentence_embedding.ravel().tolist()
+            # sentence_embedding = np.mean(token_vecs_sum, axis=0)
+            return token_vecs_sum#sentence_embedding.ravel().tolist()
