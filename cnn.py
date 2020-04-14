@@ -21,10 +21,14 @@ class CNN(nn.Module):
         self.kernel_size = kernel_size
         self.out_channel = num_filter
         self.conv1 = nn.Conv1d(self.in_channel, self.out_channel, self.kernel_size, bias=True)
-    
-    def forward(self, x_reshape):
-        max_word_length = x_reshape.shape[-1]
-        x_conv = self.conv1(x_reshape)
+    #(12, 103, 768)
+    #(12, 103 - kernel_size + 1, num_filter)
+    # (12, 1, num_filter)
+    def forward(self, x):
+        # x_reshape = x.permute(0,1,3,2)
+        max_word_length = x.shape[-1]
+        x_conv = self.conv1(x)
         x_relu = F.relu(x_conv)
         x_conv_out = F.max_pool1d(x_relu, max_word_length-self.kernel_size+1)
         return x_conv_out
+        
