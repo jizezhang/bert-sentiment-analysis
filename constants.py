@@ -3,3 +3,4 @@ TEST_FILE_PATH = './data/test.csv'
 
 TEXT_COL = 'Text'
 SCORE_COL = 'Score'
+NUM_CAT = 2
