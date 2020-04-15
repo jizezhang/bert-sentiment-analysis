@@ -39,4 +39,4 @@ def batch_iter(data, batch_size, shuffle=False):
         samples = [data[idx] for idx in indices]
         inputs = [e[0] for e in samples]
         targets = [e[1] for e in samples]
-        yield torch.cat(inputs), torch.cat(targets)
+        yield torch.stack(inputs), torch.tensor(targets)
