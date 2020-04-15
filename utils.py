@@ -28,13 +28,13 @@ def pad_sentences(sentences, word_embed_dim=None):
 def batch_iter(data, batch_size, shuffle=False):
     """ Yield batches of source and target sentences reverse sorted by length (largest to smallest).
     """
-    batch_num = math.ceil(len(data) / batch_size)
+    num_batch = math.ceil(len(data) / batch_size)
     index_array = list(range(len(data)))
 
     if shuffle:
         np.random.shuffle(index_array)
     
-    for i in range(batch_num):
+    for i in range(num_batch):
         indices = index_array[i * batch_size: (i + 1) * batch_size]
         samples = [data[idx] for idx in indices]
         inputs = [e[0] for e in samples]

@@ -12,18 +12,25 @@ class CNN(nn.Module):
     '''
     implement the cnn
     '''
-    def __init__(self, embed_size, kernel_size, num_filter):
+    def __init__(self, embed_dim, kernel_size, num_filter):
         '''Init the Highway model'''
         super(CNN, self).__init__()
         
-        self.in_channel = embed_size 
         self.kernel_size = kernel_size
-        self.out_channel = num_filter
-        self.conv1 = nn.Conv1d(self.in_channel, self.out_channel, self.kernel_size, bias=True)
+        self.conv1 = nn.Conv1d(
+            in_channels=embed_dim, 
+            out_channels=num_filter, 
+            kernel_size=self.kernel_size, 
+            bias=True
+        )
     
-    def forward(self, x_reshape):
-        max_word_length = x_reshape.shape[-1]
-        x_conv = self.conv1(x_reshape)
+    def forward(self, x):
+        """
+        :param x: tensor of shape (batch_size, sent_len, embed_dim)
+        """
+        sent_len = x.shape[1]
+        x_conv = self.conv1(x.permute(0, 2, 1))
         x_relu = F.relu(x_conv)
-        x_conv_out = F.max_pool1d(x_relu, max_word_length-self.kernel_size+1)
-        return x_conv_out
+        x_maxpool = F.max_pool1d(x_relu, sent_len - self.kernel_size + 1)
+        # permute return vector so its dimension is (batch_size, vec_size_after_maxpool, num_filters)
+        return x_maxpool.permute(0, 2, 1)
