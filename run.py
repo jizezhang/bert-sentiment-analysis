@@ -13,6 +13,7 @@ def run():
     embed = Embeddings()
     train_corpus = embed.convert_corpus(TRAIN_FILE_PATH, 12)
     test_corpus = embed.convert_corpus(TEST_FILE_PATH, 10)
+    print(len(train_corpus), len(test_corpus))
     
     embed_dim = 768
     kernel_size = 5
@@ -23,6 +24,7 @@ def run():
 
     pipeline = Pipeline(train_corpus, cnn_clf, loss_cls)
     pipeline.train_model(optimizer_cls)
+    pipeline.evaluate(train_corpus)
     pipeline.evaluate(test_corpus)
 
     # trained_model = train_model(train_corpus, cnn_clf, optimizer_cls, loss_cls)

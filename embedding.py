@@ -2,6 +2,7 @@
 from transformers import BertModel, BertTokenizer
 import torch
 from utils import read_data
+from tqdm import tqdm
 
 
 class Embeddings:
@@ -56,7 +57,7 @@ class Embeddings:
             return torch.sum(torch.cat(encoded_layers[-4:]), 0)
 
     def convert_corpus(self, path, num_entries):
-        sents, scores = read_data(path, 12)
-        sent_tensors = [self.sentence2matrix(sent) for sent in sents]
+        sents, scores = read_data(path, num_entries)
+        sent_tensors = [self.sentence2matrix(sent) for sent in tqdm(sents)]
         corpus = list(zip(sent_tensors, scores))
         return corpus

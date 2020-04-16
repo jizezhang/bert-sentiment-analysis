@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from utils import batch_iter
 import torch
+from tqdm import tqdm
 
 @dataclass
 class TrainArgs:
@@ -31,16 +32,25 @@ class Pipeline:
                 loss.backward()
                 self.optimizer.step()
                 running_loss += loss.item()
-            print('epoch', epoch, 'running loss', running_loss) 
+            if (epoch + 1) % 10 == 0:
+                print('epoch', epoch + 1, 'running loss', running_loss) 
 
-    def evaluate(self, test_corpus, batch_size=None):
+    def evaluate(self, corpus, batch_size=None):
         num_correct = 0 
+        num_true_pos = 0
+        num_pred_pos = 0
+        num_true_and_pred_pos = 0
         with torch.no_grad():
-            for sents, scores in batch_iter(test_corpus, batch_size):
-                _, predicted = torch.max(self.forward_model(sents), 1)
+            for sents, scores in batch_iter(corpus, batch_size):
+                num_true_pos += scores.sum().item()
+                _, predicted = torch.max(self.forward_model(sents), dim=1)
+                num_pred_pos += predicted.sum().item()
                 num_correct += (predicted == scores).sum().item()
-        print('accuracy', num_correct / len(test_corpus))
-        return num_correct
+                num_true_and_pred_pos += torch.min(predicted == scores, predicted == torch.ones(scores.shape[0])).sum().item()
+        print('accuracy', num_correct / len(corpus))
+        print('recall', num_true_and_pred_pos / num_true_pos)
+        print('precision', num_true_and_pred_pos / num_pred_pos)
+        print('total pos', num_true_pos, 'total', len(corpus))
 
 
 
