@@ -14,6 +14,9 @@ def run():
     embed = Embeddings()
     train_sent_tensors = [embed.sentence2matrix(sent) for sent in train_sents]
     train_corpus = list(zip(train_sent_tensors, train_scores))
+    test_sents, test_scores = read_data(TEST_FILE_PATH, 10)
+    test_sent_tensors = [embed.sentence2matrix(sent) for sent in test_sents]
+    test_corpus = list(zip(test_sent_tensors, test_scores))
     # train_sent_tensors = pad_sentences(train_sent_tensors)
 
     embed_dim = train_sent_tensors[0].shape[-1]
@@ -25,6 +28,7 @@ def run():
 
     pipeline = Pipeline(train_corpus, cnn_clf, loss_cls)
     pipeline.train_model(optimizer_cls)
+    pipeline.evaluate(test_corpus)
 
     # trained_model = train_model(train_corpus, cnn_clf, optimizer_cls, loss_cls)
 

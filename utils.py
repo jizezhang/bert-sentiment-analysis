@@ -25,10 +25,15 @@ def pad_sentences(sentences, word_embed_dim=None):
     zero_padding_vec = torch.tensor([0.0] * word_embed_dim)
     return [torch.cat((sent, zero_padding_vec.repeat(max_sent_len - sent.shape[0], 1))) for sent in sentences]
 
-def batch_iter(data, batch_size, shuffle=False, pad_batch=True):
+def batch_iter(data, batch_size=None, shuffle=False, pad_batch=True):
     """ Yield batches of source and target sentences reverse sorted by length (largest to smallest).
     """
-    num_batch = math.ceil(len(data) / batch_size)
+    if batch_size is None:
+        num_batch = 1
+        batch_size = len(data)
+    else:
+        num_batch = math.ceil(len(data) / batch_size)
+    
     index_array = list(range(len(data)))
 
     if shuffle:

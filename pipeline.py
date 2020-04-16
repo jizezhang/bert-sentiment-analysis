@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from utils import batch_iter
+import torch
 
 @dataclass
 class TrainArgs:
@@ -30,7 +31,16 @@ class Pipeline:
                 loss.backward()
                 self.optimizer.step()
                 running_loss += loss.item()
-            print('epoch', epoch, 'running loss', running_loss)
+            print('epoch', epoch, 'running loss', running_loss) 
+
+    def evaluate(self, test_corpus, batch_size=None):
+        num_correct = 0 
+        with torch.no_grad():
+            for sents, scores in batch_iter(test_corpus, batch_size):
+                _, predicted = torch.max(self.forward_model(sents), 1)
+                num_correct += (predicted == scores).sum().item()
+        print('accuracy', num_correct / len(test_corpus))
+        return num_correct
 
 
 
