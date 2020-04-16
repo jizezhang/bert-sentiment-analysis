@@ -10,16 +10,11 @@ from pipeline import Pipeline
 
 def run():
 
-    train_sents, train_scores = read_data(TRAIN_FILE_PATH, 12)
     embed = Embeddings()
-    train_sent_tensors = [embed.sentence2matrix(sent) for sent in train_sents]
-    train_corpus = list(zip(train_sent_tensors, train_scores))
-    test_sents, test_scores = read_data(TEST_FILE_PATH, 10)
-    test_sent_tensors = [embed.sentence2matrix(sent) for sent in test_sents]
-    test_corpus = list(zip(test_sent_tensors, test_scores))
-    # train_sent_tensors = pad_sentences(train_sent_tensors)
-
-    embed_dim = train_sent_tensors[0].shape[-1]
+    train_corpus = embed.convert_corpus(TRAIN_FILE_PATH, 12)
+    test_corpus = embed.convert_corpus(TEST_FILE_PATH, 10)
+    
+    embed_dim = 768
     kernel_size = 5
     num_filters = 10
     cnn_clf = CNNClassifier(embed_dim, kernel_size, num_filters)

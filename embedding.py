@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from transformers import BertModel, BertTokenizer
 import torch
+from utils import read_data
 
 
 class Embeddings:
@@ -53,3 +54,9 @@ class Embeddings:
 
         else:
             return torch.sum(torch.cat(encoded_layers[-4:]), 0)
+
+    def convert_corpus(self, path, num_entries):
+        sents, scores = read_data(path, 12)
+        sent_tensors = [self.sentence2matrix(sent) for sent in sents]
+        corpus = list(zip(sent_tensors, scores))
+        return corpus
