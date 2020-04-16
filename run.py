@@ -6,14 +6,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from classifiers import CNNClassifier
-from pipeline import Pipeline
+from pipeline import Pipeline, TrainArgs
 
 def run():
 
     embed = Embeddings()
-    train_corpus = embed.convert_corpus(TRAIN_FILE_PATH, 12)
-    test_corpus = embed.convert_corpus(TEST_FILE_PATH, 10)
-    print(len(train_corpus), len(test_corpus))
+    train_corpus = embed.convert_corpus(TRAIN_FILE_PATH, 1000)
+    test_corpus = embed.convert_corpus(TEST_FILE_PATH, 500)
     
     embed_dim = 768
     kernel_size = 5
@@ -22,20 +21,11 @@ def run():
     optimizer_cls = optim.Adam
     loss_cls = nn.NLLLoss
 
+    train_args = TrainArgs(epochs=20)
     pipeline = Pipeline(train_corpus, cnn_clf, loss_cls)
-    pipeline.train_model(optimizer_cls)
+    pipeline.train_model(optimizer_cls, train_args=train_args)
     pipeline.evaluate(train_corpus)
     pipeline.evaluate(test_corpus)
-
-    # trained_model = train_model(train_corpus, cnn_clf, optimizer_cls, loss_cls)
-
-    # test_sents, test_scores = read_data(TEST_FILE_PATH, 10)
-    # test_sent_tensors = [embed.sentence2matrix(sent) for sent in test_sents]
-    # _, predicted = torch.max(cnn_clf(test_sent_tensors), 1)
-
-
-
-
 
 
 if __name__ == '__main__':

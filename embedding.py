@@ -56,7 +56,7 @@ class Embeddings:
         else:
             return torch.sum(torch.cat(encoded_layers[-4:]), 0)
 
-    def convert_corpus(self, path, num_entries):
+    def convert_corpus(self, path, num_entries=None):
         sents, scores = read_data(path, num_entries)
         sent_tensors = [self.sentence2matrix(sent) for sent in tqdm(sents)]
         corpus = list(zip(sent_tensors, scores))
