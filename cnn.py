@@ -5,8 +5,8 @@ from typing import List, Tuple
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.nn.utils
+from torch.functional import F
 
 class CNN(nn.Module):
     '''
@@ -16,7 +16,6 @@ class CNN(nn.Module):
         '''Init the Highway model'''
         super(CNN, self).__init__()
         
-        self.num_filter = num_filter
         self.kernel_size = kernel_size
         # https://pytorch.org/docs/stable/nn.html#torch.nn.Conv1d
         self.conv1 = nn.Conv1d(
@@ -30,10 +29,9 @@ class CNN(nn.Module):
         """
         :param x: tensor of shape (batch_size, sent_len, embed_dim)
         """
-        batch_size = x.shape[0]
         sent_len = x.shape[1]
         x_conv = self.conv1(x.permute(0, 2, 1))
         x_relu = F.relu(x_conv)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool1d
         x_maxpool = F.max_pool1d(x_relu, sent_len - self.kernel_size + 1)
-        return x_maxpool.view(batch_size, self.num_filter)
+        return x_maxpool.squeeze()
