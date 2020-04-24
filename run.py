@@ -10,9 +10,11 @@ from pipeline import Pipeline, TrainArgs
 
 def run():
 
+    device = 'cpu'
+
     embed = Embeddings()
-    train_corpus = embed.convert_corpus(TRAIN_FILE_PATH, 1000)
-    test_corpus = embed.convert_corpus(TEST_FILE_PATH, 500)
+    train_corpus = embed.convert_corpus(TRAIN_FILE_PATH, 100)
+    test_corpus = embed.convert_corpus(TEST_FILE_PATH, 50)
     
     embed_dim = 768
     kernel_size = 5
@@ -21,7 +23,7 @@ def run():
     optimizer_cls = optim.Adam
     loss_cls = nn.NLLLoss
 
-    train_args = TrainArgs(epochs=20)
+    train_args = TrainArgs(epochs=10, device=device)
     pipeline = Pipeline(train_corpus, cnn_clf, loss_cls)
     pipeline.train_model(optimizer_cls, train_args=train_args)
     pipeline.evaluate(train_corpus)

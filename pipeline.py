@@ -27,12 +27,12 @@ class Pipeline:
             running_loss = 0.0
             for sents, scores in batch_iter(self.train_corpus, train_args.train_batch_size, shuffle=True):
                 self.optimizer.zero_grad()
-                outputs = self.forward_model.forward(sents)
-                loss = self.criterion(outputs, scores)
+                outputs = self.forward_model.forward(sents.to(device=train_args.device))
+                loss = self.criterion(outputs, scores.to(device=train_args.device))
                 loss.backward()
                 self.optimizer.step()
                 running_loss += loss.item()
-            if (epoch + 1) % 10 == 0:
+            if (epoch + 1) % 2 == 0:
                 print('epoch', epoch + 1, 'running loss', running_loss) 
 
     def evaluate(self, corpus, batch_size=None):
@@ -43,7 +43,7 @@ class Pipeline:
         with torch.no_grad():
             for sents, scores in batch_iter(corpus, batch_size):
                 num_true_pos += scores.sum().item()
-                _, predicted = torch.max(self.forward_model(sents), dim=1)
+                _, predicted = torch.max(torch.exp(self.forward_model(sents)), dim=1)
                 num_pred_pos += predicted.sum().item()
                 num_correct += (predicted == scores).sum().item()
                 num_true_and_pred_pos += torch.min(predicted == scores, predicted == torch.ones(scores.shape[0])).sum().item()
