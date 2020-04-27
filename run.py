@@ -12,7 +12,7 @@ def run():
 
     device = 'cpu'
 
-    embed = Embeddings()
+    embed = Embeddings(device)
     train_corpus = embed.convert_corpus(TRAIN_FILE_PATH, 100)
     test_corpus = embed.convert_corpus(TEST_FILE_PATH, 50)
     

@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 class Embeddings:
 
-    def __init__(self):
+    def __init__(self, device='cpu'):
+        self.device = device
         self._tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self._bert_model = BertModel.from_pretrained('bert-base-uncased', output_hidden_states=True)
         self._bert_model.eval()
@@ -34,8 +35,8 @@ class Embeddings:
         segments_ids = [0] * len(tokenized_text)
 
         # Convert inputs to PyTorch tensors
-        tokens_tensor = torch.tensor([indexed_tokens])
-        segments_tensors = torch.tensor([segments_ids])
+        tokens_tensor = torch.tensor([indexed_tokens], device=self.device)
+        segments_tensors = torch.tensor([segments_ids], device=self.device)
 
         with torch.no_grad():
             encoded_layers = self._bert_model(tokens_tensor, token_type_ids=segments_tensors)
