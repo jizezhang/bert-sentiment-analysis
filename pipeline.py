@@ -13,8 +13,8 @@ class TrainArgs:
 
 class Pipeline:
 
-    def __init__(self, train_corpus, forward_model, loss_cls):
-        self.train_corpus = train_corpus
+    def __init__(self, dataloader, forward_model, loss_cls):
+        self.dataloader = dataloader
         self.forward_model = forward_model
         self.criterion = loss_cls()
 
@@ -25,32 +25,31 @@ class Pipeline:
         epoch = 0
         for epoch in range(train_args.epochs):
             running_loss = 0.0
-            for sents, scores in batch_iter(self.train_corpus, train_args.train_batch_size, shuffle=True):
+            for _, (sent, mask, scores) in enumerate(self.dataloader):
                 self.optimizer.zero_grad()
-                outputs = self.forward_model.forward(sents.to(device=train_args.device))
+                outputs = self.forward_model.forward((sent.to(device=train_args.device), mask.to(device=train_args.device)))
                 loss = self.criterion(outputs, scores.to(device=train_args.device))
                 loss.backward()
                 self.optimizer.step()
                 running_loss += loss.item()
-            if (epoch + 1) % 2 == 0:
-                print('epoch', epoch + 1, 'running loss', running_loss) 
+            print('epoch', epoch + 1, 'running loss', running_loss) 
 
-    def evaluate(self, corpus, batch_size=None):
+    def evaluate(self, dataloader, batch_size=None):
         num_correct = 0 
         num_true_pos = 0
         num_pred_pos = 0
         num_true_and_pred_pos = 0
         with torch.no_grad():
-            for sents, scores in batch_iter(corpus, batch_size):
+            for i, (sent, mask, scores) in enumerate(dataloader):
                 num_true_pos += scores.sum().item()
-                _, predicted = torch.max(torch.exp(self.forward_model(sents)), dim=1)
+                _, predicted = torch.max(torch.exp(self.forward_model((sent, mask))), dim=1)
                 num_pred_pos += predicted.sum().item()
                 num_correct += (predicted == scores).sum().item()
                 num_true_and_pred_pos += torch.min(predicted == scores, predicted == torch.ones(scores.shape[0])).sum().item()
-        print('accuracy', num_correct / len(corpus))
+        print('accuracy', num_correct / len(dataloader.dataset))
         print('recall', num_true_and_pred_pos / num_true_pos)
         print('precision', num_true_and_pred_pos / num_pred_pos)
-        print('total pos', num_true_pos, 'total', len(corpus))
+        print('total pos', num_true_pos, 'total', len(dataloader.dataset))
 
 
 
