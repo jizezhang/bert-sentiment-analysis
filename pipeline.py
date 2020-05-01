@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from utils import batch_iter
 import torch
 from tqdm import tqdm
 
@@ -40,7 +39,7 @@ class Pipeline:
         num_pred_pos = 0
         num_true_and_pred_pos = 0
         with torch.no_grad():
-            for i, (sent, mask, scores) in enumerate(dataloader):
+            for _, (sent, mask, scores) in enumerate(dataloader):
                 num_true_pos += scores.sum().item()
                 _, predicted = torch.max(torch.exp(self.forward_model((sent, mask))), dim=1)
                 num_pred_pos += predicted.sum().item()
