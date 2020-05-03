@@ -33,7 +33,9 @@ class Pipeline:
                 running_loss += loss.item()
             print('epoch', epoch + 1, 'running loss', running_loss) 
 
-    def evaluate(self, dataloader, batch_size=None):
+            self.evaluate(self.dataloader)
+
+    def evaluate(self, dataloader):
         num_correct = 0 
         num_true_pos = 0
         num_pred_pos = 0

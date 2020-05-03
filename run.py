@@ -13,9 +13,9 @@ def run():
 
     device = 'cpu'
 
-    train_data = BertDataset(TRAIN_FILE_PATH, num_entries=200)
+    train_data = BertDataset(TRAIN_FILE_PATH, num_entries=500)
     test_data = BertDataset(TEST_FILE_PATH, num_entries=100)
-    batch_size = 2
+    batch_size = 5
     train_dataloader = SentDataLoader(train_data, batch_size=batch_size)
     test_dataloader = SentDataLoader(test_data, batch_size=batch_size)
 
@@ -29,13 +29,13 @@ def run():
     optimizer_cls = optim.Adam
     loss_cls = nn.NLLLoss
 
-    train_args = TrainArgs(epochs=10, device=device)
+    train_args = TrainArgs(epochs=5, device=device)
     pipeline = Pipeline(train_dataloader, cnn_clf, loss_cls)
     pipeline.train_model(optimizer_cls, train_args=train_args)
 
     train_dataloader = SentDataLoader(train_data, batch_size=batch_size)
-    print('evaluate train:')
-    pipeline.evaluate(train_dataloader)
+    # print('evaluate train:')
+    # pipeline.evaluate(train_dataloader)
     print('evaluate test:')
     pipeline.evaluate(test_dataloader)
 
